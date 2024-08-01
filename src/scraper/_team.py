@@ -1,13 +1,14 @@
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-from ._base import BaseScraper
+from rich import print
+from .base import Base
 from ..parsers.team import team_parsers
 from ..config.settings import URL
 from ..abstract import Parser, DataSaver
 
 
 @dataclass(kw_only=True)
-class TeamScraper(BaseScraper):
+class TeamScraper(Base):
     league: str
     league_id: str
     year: int
@@ -24,8 +25,12 @@ class TeamScraper(BaseScraper):
             f"Scraper initialized for: League: {self.league}, ID: {self.league_id}, Year: {self.year}"
         )
 
-    def run(self) -> None:
-        data = self.scrape()
+    def scrape(self) -> None:
+        print(
+            f"Scraping data for: League: {self.league}, ID: {self.league_id}, Year: {self.year}"
+        )
+        
+        data = super().scrape()
         print(data)
 
         if self.saver is not None:

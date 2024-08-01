@@ -6,11 +6,9 @@ import pandas as pd
 
 from ..abstract import Parser, DataSaver
 
-# from schemas import Team
-
 
 @dataclass
-class BaseScraper:
+class Base:
     """Scrape data from transfermarkt for a given url and year."""
 
     parsers: Sequence[Parser]
