@@ -1,10 +1,10 @@
-from .scraper import TeamScraper, PlayerScraper
+from pathlib import Path
+
+import pandas as pd
+
 from .savers import ParquetSaver
 from .schemas import Team
-from pathlib import Path
-from rich import print
-import pandas as pd
-import time
+from .scraper import PlayerScraper, TeamScraper, MultiScraper
 
 
 def team_scraper() -> None:
@@ -17,27 +17,29 @@ def team_scraper() -> None:
         saver=ParquetSaver(output_path=output),
     )
 
-    scraper.run()
+    scraper.scrape()
 
 
 def player_scraper() -> None:
-    path = Path().cwd() / "src" / "data" / "team_info.parquet"
-    team_info = pd.read_parquet(path)
+    input_path = Path().cwd() / "src" / "data" / "team_info.parquet"
+    output_path = Path().cwd() / "src" / "data" / "player_info.parquet"
+
+    team_info = pd.read_parquet(input_path)
 
     teams = [
-        Team(id=id, name=name)
-        for id, name in zip(team_info["team_id"], team_info["team_name"])
+        Team(id=team.team_id, name=team.team_name)
+        for team in team_info.itertuples(
+            index=False
+        )
     ]
 
-    for team in teams:
-        scraper = PlayerScraper(
-            year=2023,
-            team=team,
-        )
+    scrapers = [PlayerScraper(team=team, year=2023) for team in teams]
 
-        data = scraper.run()
-        print(data)
-        time.sleep(5)
+    multi_scraper = MultiScraper(
+        scrapers=scrapers, saver=ParquetSaver(output_path=output_path)
+    )
+
+    multi_scraper.scrape()
 
 
 def main() -> None:
