@@ -14,7 +14,11 @@ beautifulsoup4 = "^4.12.3"
 pyarrow = "^17.0.0"
 fastparquet = "^2024.5.0"
 rich = "^13.7.1"
+matplotlib = "^3.9.1"
 
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.5"
 
 [build-system]
 requires = ["poetry-core"]
